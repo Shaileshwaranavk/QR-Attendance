@@ -11,7 +11,7 @@ from core.serializers import (
     AttendanceSerializer,
     AttendancePercentageSerializer
 )
-from core.utils.qr_generator import generate_session_qr
+from core.utils.qr_generator import generate_session_qr_response
 from core.permissions import IsTeacherUserCustom
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -75,6 +75,8 @@ class CreateSubjectAPIView(APIView):
 
 
 # ✅ 2️⃣ Create Session (Generate QR)
+from core.utils.qr_generator import generate_session_qr_response
+
 class CreateSessionAPIView(APIView):
     permission_classes = [IsAuthenticated, IsTeacherUserCustom]
 
@@ -91,25 +93,16 @@ class CreateSessionAPIView(APIView):
         if serializer.is_valid():
             session = serializer.save()
 
-            # ✅ Use subject.code instead of subject.id
-            qr_path = generate_session_qr(
-                subject_code=session.subject.code,  # <-- fixed here
+            # ✅ Generate and return the QR as an image
+            return generate_session_qr_response(
+                subject_code=session.subject.code,
                 session_id=session.id,
                 topic=session.topic,
                 class_date=str(session.class_date),
                 start_time=str(session.start_time),
             )
 
-            return Response(
-                {
-                    "message": "✅ Session created successfully!",
-                    "qr_code_path": qr_path,
-                },
-                status=status.HTTP_201_CREATED,
-            )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(serializer.errors, status=400)
 
 
 # ✅ 3️⃣ View My Subjects

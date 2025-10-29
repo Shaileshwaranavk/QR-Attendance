@@ -1,43 +1,22 @@
-import os
 import qrcode
-from datetime import datetime
+from io import BytesIO
+from django.http import HttpResponse
 
-
-def generate_session_qr(subject_code, session_id, topic, class_date, start_time):
+def generate_session_qr_response(subject_code, session_id, topic, class_date, start_time):
     """
-    Generates a QR code for a class session.
-    The QR encodes: subject_code,session_id,topic,class_date,start_time
-    and stores it in 'media/qrcodes/'.
+    Generates and returns a QR code image (as HttpResponse with image/png).
     """
-    try:
-        # ✅ Ensure directory exists
-        folder = "media/qrcodes"
-        os.makedirs(folder, exist_ok=True)
+    qr_data = f"{subject_code},{session_id},{topic},{class_date},{start_time}"
 
-        # ✅ Prepare data string
-        qr_data = f"{subject_code},{session_id},{topic},{class_date},{start_time}"
+    # Generate the QR
+    qr_img = qrcode.make(qr_data)
 
-        # ✅ Generate QR
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(qr_data)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
+    # Convert QR to bytes
+    buffer = BytesIO()
+    qr_img.save(buffer, format="PNG")
+    buffer.seek(0)
 
-        # ✅ Save file
-        filename = f"{subject_code}_{session_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-        file_path = os.path.join(folder, filename)
-        img.save(file_path)
-
-        print("✅ QR Code generated successfully!")
-        print(f"📁 Saved at: {file_path}")
-        print(f"🔹 Data encoded: {qr_data}")
-
-        return file_path
-    except Exception as e:
-        print(f"❌ Error generating QR: {e}")
-        return None
+    # Return as image response
+    response = HttpResponse(buffer.getvalue(), content_type="image/png")
+    response["Content-Disposition"] = f'inline; filename="qr_{subject_code}_{session_id}.png"'
+    return response
