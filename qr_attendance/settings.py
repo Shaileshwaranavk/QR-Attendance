@@ -35,16 +35,22 @@ INSTALLED_APPS = [
 # ✅ Middleware (order matters)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
-    'corsheaders.middleware.CorsMiddleware',  # ✅ Must come before CommonMiddleware
+
+    # ✅ WhiteNoise for serving static files on Railway
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    # ✅ CORS (must be before CommonMiddleware)
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # ❌ Removed CSRF middleware (you are using JWT, not cookies)
+    # CSRF can remain disabled for APIs using JWT
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 # ✅ Core project config
 ROOT_URLCONF = 'qr_attendance.urls'
@@ -121,8 +127,10 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# ✅ Static and Media Files
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -132,4 +140,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ✅ Custom user model
 AUTH_USER_MODEL = 'core.User'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
