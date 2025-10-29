@@ -70,13 +70,14 @@ WSGI_APPLICATION = 'qr_attendance.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'attendance_db'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'Avks@2005'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5433'),
+        'NAME': 'railway',  # Database name (from URL)
+        'USER': 'postgres',
+        'PASSWORD': 'rjImWEoECgaXtjiedIMuMHyqXXGZGVJg',
+        'HOST': 'crossover.proxy.rlwy.net',
+        'PORT': '59141',
     }
 }
+
 
 # ✅ Django REST Framework & JWT Configuration
 REST_FRAMEWORK = {
