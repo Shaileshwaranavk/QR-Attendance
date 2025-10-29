@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 # ✅ Middleware (order matters)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
     'corsheaders.middleware.CorsMiddleware',  # ✅ Must come before CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -130,3 +131,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ✅ Custom user model
 AUTH_USER_MODEL = 'core.User'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
